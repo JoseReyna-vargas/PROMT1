@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trivia Educativa</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; }
+        .container { max-width: 600px; margin: auto; padding: 20px; }
+        .question { font-size: 20px; margin-bottom: 10px; }
+        .options { list-style: none; padding: 0; }
+        .options li { padding: 10px; margin: 5px 0; border-radius: 5px; cursor: pointer; border: 1px solid #ccc; }
+        .correct { background-color: lightgreen !important; }
+        .incorrect { background-color: salmon !important; }
+        .next-btn { margin-top: 20px; padding: 10px; background: #007BFF; color: white; border: none; cursor: pointer; display: none; }
+        .next-btn:disabled { background: #ccc; cursor: not-allowed; }
+        .feedback { font-size: 18px; margin-top: 20px; }
+    </style>
+</head>
+<body>
+    <div class="container animate__animated animate__fadeIn">
+        <div id="quiz">
+            <p id="question" class="question"></p>
+            <ul id="options" class="options"></ul>
+            <button id="next" class="next-btn" disabled>Siguiente</button>
+        </div>
+        <div id="result" class="feedback"></div>
+    </div>
+    <script>
+        const questions = [
+            { q: "¿Cuál es el planeta más grande del sistema solar?", a: ["Marte", "Júpiter", "Saturno", "Neptuno"], correct: 1 },
+            { q: "¿Quién escribió 'Don Quijote de la Mancha'?", a: ["Lope de Vega", "Miguel de Cervantes", "Gabriel García Márquez", "Pablo Neruda"], correct: 1 },
+            { q: "¿Cuánto es 8 x 7?", a: ["54", "56", "64", "49"], correct: 1 },
+            { q: "¿En qué continente se encuentra Egipto?", a: ["Asia", "África", "Europa", "América"], correct: 1 },
+            { q: "¿Cuál es el metal más utilizado en la industria?", a: ["Oro", "Plata", "Hierro", "Cobre"], correct: 2 },
+            { q: "¿Quién pintó la Mona Lisa?", a: ["Picasso", "Van Gogh", "Leonardo da Vinci", "Miguel Ángel"], correct: 2 },
+            { q: "¿Cuántos lados tiene un hexágono?", a: ["5", "6", "7", "8"], correct: 1 },
+            { q: "¿Cuál es el océano más grande?", a: ["Atlántico", "Índico", "Ártico", "Pacífico"], correct: 3 },
+            { q: "¿Cuál es la capital de Canadá?", a: ["Toronto", "Vancouver", "Ottawa", "Montreal"], correct: 2 },
+            { q: "¿Qué gas necesitamos para respirar?", a: ["Nitrógeno", "Oxígeno", "Hidrógeno", "Dióxido de carbono"], correct: 1 }
+        ];
+
+        let currentQuestion = 0;
+        let score = 0;
+
+        function loadQuestion() {
+            document.getElementById("result").innerHTML = "";
+            const q = questions[currentQuestion];
+            document.getElementById("question").textContent = q.q;
+            const optionsList = document.getElementById("options");
+            optionsList.innerHTML = "";
+            q.a.forEach((option, index) => {
+                const li = document.createElement("li");
+                li.textContent = option;
+                li.onclick = () => selectAnswer(index, li);
+                optionsList.appendChild(li);
+            });
+            document.getElementById("next").disabled = true;
+            document.getElementById("next").style.display = "inline";
+        }
+
+        function selectAnswer(index, element) {
+            const correctIndex = questions[currentQuestion].correct;
+            document.querySelectorAll(".options li").forEach(li => li.onclick = null);
+            if (index === correctIndex) {
+                element.classList.add("correct");
+                score++;
+            } else {
+                element.classList.add("incorrect");
+                document.querySelectorAll(".options li")[correctIndex].classList.add("correct");
+            }
+            document.getElementById("next").disabled = false;
+        }
+
+        document.getElementById("next").addEventListener("click", () => {
+            currentQuestion++;
+            if (currentQuestion < questions.length) {
+                loadQuestion();
+            } else {
+                showResult();
+            }
+        });
+
+        function showResult() {
+            document.getElementById("quiz").style.display = "none";
+            let feedback;
+            if (score === 10) feedback = "¡Excelente! Has respondido todo correctamente.";
+            else if (score >= 7) feedback = "¡Muy bien! Tienes un gran conocimiento.";
+            else if (score >= 5) feedback = "¡Bien! Aunque puedes mejorar.";
+            else feedback = "Sigue estudiando, puedes hacerlo mejor.";
+            document.getElementById("result").innerHTML = `Puntaje: ${score}/10<br>${feedback}`;
+        }
+
+        loadQuestion();
+    </script>
+</body>
+</html>
